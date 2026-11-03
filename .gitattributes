@@ -1,0 +1,13 @@
+# 统一换行符：脚本与工作台模板必须是 LF，否则 Windows 上 checkout 出的
+# .mjs 内嵌正则与 HTML 注入点可能出现不可预期的行为。
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+
+*.md text eol=lf
+*.mjs text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
