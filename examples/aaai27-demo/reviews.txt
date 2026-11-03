@@ -1,0 +1,115 @@
+Official Review of Submission 4187 - Reviewer xK9p
+
+Summary:
+This paper proposes FlowFuse, a latent-diffusion conditioning scheme that fuses
+multi-sensor inputs for industrial anomaly detection. The idea of avoiding
+early/late fusion by conditioning in latent space is reasonable and the results
+on the two public benchmarks look decent.
+
+Strengths:
+- S1. The latent-space fusion formulation is elegant and avoids per-modality
+  encoders at inference time.
+- S2. Consistent gains over the three cited fusion baselines on both datasets.
+
+Weaknesses:
+- W1. The novelty relative to cross-attention conditioning (e.g. the 2025
+  "AdaCond" line of work) is not clearly established. The claimed contribution
+  looks like an incremental change of the conditioning interface. This is a
+  major concern for me.
+- W2. Only two baselines are from the last 18 months. There is no comparison
+  against a strong recent method, so I cannot judge whether the gain comes from
+  fusion or from the backbone.
+- W3. No ablation on the number of fused modalities. What happens when one
+  sensor is missing at test time? Robustness to missing modality is the whole
+  point of the application scenario.
+
+Questions:
+- Q1. Could you report inference latency and peak memory relative to the
+  early-fusion baseline? The method section does not state the overhead.
+- Q2. Which random seeds were used? Are the reported standard deviations over
+  seeds or over test folds?
+
+Limitations:
+- The paper acknowledges only dataset coverage. I would consider raising my
+  score if the authors provide a comparison against at least one 2026 method
+  and a missing-modality ablation.
+
+Rating: 5
+Confidence: 4
+
+--------------------------------------------------------------------------------
+
+Official Review of Submission 4187 - Reviewer Bt3Q
+
+Summary:
+The paper addresses a practical problem and the writing is mostly easy to
+follow. My main reservation is about evaluation protocol.
+
+Strengths:
+- S1. Practical motivation, clear figures, and the pipeline diagram is helpful.
+- S2. Code is promised to be released.
+
+Weaknesses:
+- W1. I think the data split is potentially leaking: samples from the same
+  production line appear in both train and test. If true this would invalidate
+  the main table, and it is a fundamental problem rather than a presentation
+  issue.
+- W2. The improvement on the second benchmark is about 0.6 mAP, which is within
+  the reported noise. Statistical reliability is not established.
+- W3. Notation in Section 3.2 is confusing: z and \hat{z} are used
+  interchangeably, and Eq. (4) is never referenced again.
+
+Questions:
+- Q1. Is the fusion module trained jointly with the diffusion backbone or
+  frozen? This is stated in the appendix but the appendix and main text
+  disagree.
+
+Rating: 4
+Confidence: 5
+
+--------------------------------------------------------------------------------
+
+Official Review of Submission 4187 - Reviewer mN7d
+
+Summary:
+Interesting work. I am not an expert in diffusion models but the anomaly
+detection framing is convincing.
+
+Strengths:
+- S1. The problem formulation is well motivated and the application is
+  meaningful.
+
+Weaknesses:
+- W1. The theoretical justification in Sec. 3.3 seems to assume the latent
+  distribution is Gaussian, which is generally false for trained VAEs. Minor
+  for me but should be softened in the text.
+- W2. Related work on multi-modal fusion in medical imaging is missing; the
+  authors should cite and discuss it.
+
+Questions:
+- Q1. Could you clarify the computational cost as the number of modalities
+  grows?
+
+Rating: 7
+Confidence: 2
+
+--------------------------------------------------------------------------------
+
+Official Review of Submission 4187 - Reviewer qW2z
+
+Summary:
+I believe this paper is a solid contribution and I am inclined to accept.
+
+Strengths:
+- S1. Clean method, strong empirical results, good presentation.
+- S2. The missing-modality discussion in the appendix is valuable.
+
+Weaknesses:
+- W1. A minor point: Table 2 should report the standard deviation of the
+  detector-free baseline too, for symmetry.
+
+Questions:
+- Q1. Do you plan to release the anonymized evaluation scripts?
+
+Rating: 8
+Confidence: 4

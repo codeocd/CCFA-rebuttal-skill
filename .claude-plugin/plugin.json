@@ -1,0 +1,8 @@
+{
+  "name": "ccfa-rebuttal",
+  "description": "顶会 rebuttal 助手：拆解审稿意见、按优先级分配字符预算、14 类异议打法、英文句式库、可检索的 CCF-A 会议规则库。产出英文 rebuttal、中文策略判断。",
+  "version": "1.0.0",
+  "author": { "name": "codeocd" },
+  "license": "MIT",
+  "keywords": ["rebuttal", "author-response", "peer-review", "ccf-a", "aaai", "neurips", "iclr", "icml", "cvpr", "acl"]
+}
