@@ -156,9 +156,9 @@ skills/ccfa-rebuttal/
 
 ---
 
-## 为什么值得信（也是为什么需要你纠错）
+## 内容来源与可信度标注
 
-内容整合自这些一手经验，逐条标注了来源与可信度：
+方法论不是凭空写的，逐条可追溯到一手经验，并标注了来源与可信度：
 
 - **魏秀参《浅谈学术论文 rebuttal》** — 篇幅是一盘棋、异议打法体系、CVPR 2019 改分基线率（>15,000 条 review）
 - **丁霄汉《顶会 rebuttal 技术浅谈：站着，还把论文中了》** — 不迎合原则、承诺具体化、告 AC 的三条纪律
@@ -168,7 +168,7 @@ skills/ccfa-rebuttal/
 - **AAAI-27 作者群信息汇总**（一手，含 1500 字符硬限制、补实验政策的冲突、AI Review 争议）
 - **[MLNLP-World/Paper-Rebuttal-Tips](https://github.com/MLNLP-World/Paper-Rebuttal-Tips)** 与 **[zhang-haichao/CS-Rebuttal-Skill](https://github.com/zhang-haichao/CS-Rebuttal-Skill)** 的结构启发
 
-规则卡里凡是标 ❓ 的，都是**社区说法互相冲突**或**逐年会变**的条目 —— 它会要求你回去核对当年 CFP，而不是替你做主。这是设计，不是缺陷。
+规则卡里凡是标 ❓ 的，代表会议逐年会变的条目 —— 它会要求你回去核对当年 CFP（Call for Papers，征稿启事），而不是替你做主。
 
 ---
 

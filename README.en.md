@@ -156,9 +156,9 @@ The reasoning is practical: with only one rebuttal round, reviewers and ACs fear
 
 ---
 
-## Where the content comes from
+## Where the content comes from, and how it is tagged
 
-Distilled from first-hand experience write-ups, each item attributed and confidence-tagged:
+Nothing here was invented — every cluster of advice traces back to a first-hand write-up, attributed and confidence-tagged:
 
 - **魏秀参, "浅谈学术论文 rebuttal"** — rebuttal as a single board game, the objection taxonomy, CVPR 2019 score-change base rates (>15,000 reviews)
 - **丁霄汉, "顶会 rebuttal 技术浅谈：站着，还把论文中了"** — anti-sycophancy, making promises verifiable, the three rules for writing to the AC
@@ -168,7 +168,7 @@ Distilled from first-hand experience write-ups, each item attributed and confide
 - **An AAAI-27 author community digest** — first-hand: the 1,500-character hard limit, the conflicting new-experiment policy, the AI-review reply debate
 - Structural inspiration from **[MLNLP-World/Paper-Rebuttal-Tips](https://github.com/MLNLP-World/Paper-Rebuttal-Tips)** and **[zhang-haichao/CS-Rebuttal-Skill](https://github.com/zhang-haichao/CS-Rebuttal-Skill)**
 
-Anything tagged ❓ in the venue cards is a line where community accounts **contradict each other** or the rule **changes yearly** — the skill tells you to check this year's CFP instead of deciding for you. That is a design choice, not a gap.
+Anything tagged ❓ in the venue cards marks a rule that **changes from year to year** — the skill sends you back to this year's CFP (Call for Papers) instead of deciding for you.
 
 ---
 
