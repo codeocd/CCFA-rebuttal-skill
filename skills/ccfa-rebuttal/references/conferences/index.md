@@ -22,17 +22,20 @@
 
 ## 路由表
 
-| 会议 | 目录 | 形态 | 上限 | 可否补实验 | 讨论期 | 审稿人互相可见 |
-| --- | --- | --- | --- | --- | --- | --- |
-| AAAI | [aaai.md](aaai.md) | 纯文本 | 每条 1500 字符 ❓ | ❓ 政策有冲突 | 无 | ✅ 是 |
-| IJCAI | [aaai.md](aaai.md) 同族 | 纯文本 | 往年约 5000 字符 🟡 | ❓ | 无 | 🟡 |
-| NeurIPS | [neurips.md](neurips.md) | OpenReview | 无硬上限 🟡 | ✅ 鼓励 | 有（数周） | ✅ |
-| ICML | [icml.md](icml.md) | OpenReview | 无硬上限 🟡 | ✅ | 有 | ✅ |
-| ICLR | [iclr.md](iclr.md) | OpenReview | 无硬上限 🟡 | ✅ | 有（较长） | ✅ 公开 |
-| CVPR / ICCV / ECCV | [cvpr.md](cvpr.md) | 1 页 PDF | 1 页 ✅ | ⚠️ 不建议 | 无/短 | ❌ |
-| ACL / EMNLP / NAACL (ARR) | [acl.md](acl.md) | OpenReview 多轮 | 无硬上限 🟡 | ✅ 允许 | 有，多轮 | ✅ |
-| ACM MM / SIGIR / KDD / WWW | 见下方「其他 CCF-A」 | 多为纯文本或 PDF | 各异 ❓ | ❓ | 各异 | ❓ |
-| EMNLP(旧) / COLING | 见 [acl.md](acl.md) | 各异 | 各异 ❓ |  | 各异 |  |
+| 会议 | 目录 | 形态 | 上限 | 可否补实验 | 讨论期 | 审稿人互相可见 | `--threshold` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| AAAI | [aaai.md](aaai.md) | 纯文本 | 每条 1500 字符 ❓ | ❓ 政策有冲突 | 无 | ✅ 是 | **6** ✅ |
+| IJCAI | [aaai.md](aaai.md) 同族 | 纯文本 | 往年约 5000 字符 🟡 | ❓ | 无 | 🟡 | **6** 🟡 |
+| NeurIPS | [neurips.md](neurips.md) | OpenReview | 无硬上限 🟡 | ✅ 鼓励 | 有（数周） | ✅ | **6** 🟡 |
+| ICML | [icml.md](icml.md) | OpenReview | 无硬上限 🟡 | ✅ | 有 | ✅ | ❓ |
+| ICLR | [iclr.md](iclr.md) | OpenReview | 无硬上限 🟡 | ✅ | 有（较长） | ✅ 公开 | **6** 🟡 |
+| CVPR / ICCV / ECCV | [cvpr.md](cvpr.md) | 1 页 PDF | 1 页 ✅ | ⚠️ 不建议 | 无/短 | ❌ | ❓ |
+| ACL / EMNLP / NAACL (ARR) | [acl.md](acl.md) | OpenReview 多轮 | 无硬上限 🟡 | ✅ 允许 | 有，多轮 | ✅ | ❓ |
+| ACM MM / SIGIR / KDD / WWW | 见下方「其他 CCF-A」 | 多为纯文本或 PDF | 各异 ❓ | ❓ | 各异 | ❓ | ❓ |
+| EMNLP(旧) / COLING | 见 [acl.md](acl.md) | 各异 | 各异 ❓ |  | 各异 |  | ❓ |
+
+> `--threshold` 是 `parse_reviews.mjs` 判定「负分」的分界线，直接决定攻单顺序。
+> 标 ❓ 的会议**不要拿默认值跑**：先看当年 review form 的刻度，再填。
 
 ## 其他 CCF-A 领域（差异大，务必读官方 CFP）
 

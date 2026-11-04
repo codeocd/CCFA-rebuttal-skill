@@ -1,0 +1,6 @@
+- Novelty is limited compared to X.
+- No comparison with recent baselines.
+- The notation in Sec 3 is unclear.
+
+Rating: 4
+Confidence: 3

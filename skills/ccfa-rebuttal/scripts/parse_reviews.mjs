@@ -96,8 +96,10 @@ function splitReviewers(text) {
 
 const SCORE_LABELS = ['rating', 'score', 'recommendation', 'overall assessment', 'overall recommendation', 'ethics flag'];
 const CONF_WORDS = {
-  expert: 5, 'knowledgeable': 4, 'willing': 3, 'unfamiliar': 2, 'not willing': 1, other: 1,
-  专家: 5, 熟悉: 4, 一般: 3, 不熟: 2,
+  'very confident': 5, expert: 5, confident: 4, 'knowledgeable': 4,
+  'somewhat confident': 3, 'willing': 3, familiar: 3,
+  uncertain: 2, 'unfamiliar': 2, 'not willing': 1, other: 1,
+  非常自信: 5, 专家: 5, 自信: 4, 熟悉: 4, 一般: 3, 不太确定: 2, 不熟: 2, 不了解: 1,
 };
 
 function grabNumber(body, labelRe) {
@@ -109,10 +111,11 @@ function grabNumber(body, labelRe) {
 }
 
 function extractMeta(body) {
-  const score = grabNumber(body, SCORE_LABELS.join('|'));
-  let confidence = grabNumber(body, 'confidence|expertise|knowledge|self[- ]assessment');
+  const score = grabNumber(body, SCORE_LABELS.join('|') + '|评分|总分|推荐');
+  let confidence = grabNumber(body, 'confidence|expertise|knowledge|self[- ]assessment|置信度|熟悉程度');
   if (confidence === null) {
-    const wm = body.match(/\b(expert|knowledgeable|willing|unfamiliar|not willing)\b/i);
+    const wm = body.match(/\b(very confident|somewhat confident|not willing|knowledgeable|unfamiliar|confident|willing|uncertain|expert)\b/i)
+      || body.match(/(非常自信|不太确定|不了解|自信|熟悉|不熟|一般)/);
     if (wm) confidence = CONF_WORDS[wm[1].toLowerCase()];
   }
   const soundness = grabNumber(body, 'soundness|significance|quality|clarity|originality');
@@ -128,8 +131,8 @@ function extractScoreCondition(body) {
 
 /* ------------------------------------------------------------ 问题条目 */
 
-const SECTION_RE = /^\s*(?:#{1,4}\s*)?[*_]{0,2}(Strengths and Weaknesses|Strengths?|Weaknesses?|Questions and Details|Questions?|Limitations?|Details|Summary|Comments and Suggestions|Suggestions?|Ethical Concerns?|Meta-?review)\b\s*[.:：]?\s*[^\n]{0,40}$/i;
-const META_RE = /^\s*[*_]{0,2}(Rating|Score|Recommendation|Overall Assessment|Overall Recommendation|Confidence|Expertise|Soundness|Significance|Quality|Clarity|Originality|Ethics Flag|Time|Submission|Reviewer)\b\s*[*_]{0,2}\s*[:：]/i;
+const SECTION_RE = /^\s*(?:#{1,4}\s*)?[*_]{0,2}(Strengths and Weaknesses|Strengths?|Weaknesses?|Questions and Details|Questions?|Limitations?|Details|Summary|Comments and Suggestions|Suggestions?|Ethical Concerns?|Meta-?review|优点|缺点|问题|局限性?|总结|伦理)(?:\b|(?=[\s.:：]|$))\s*[.:：]?\s*[^\n]{0,40}$/i;
+const META_RE = /^\s*[*_]{0,2}(Rating|Score|Recommendation|Overall Assessment|Overall Recommendation|Confidence|Expertise|Soundness|Significance|Quality|Clarity|Originality|Ethics Flag|Time|Submission|Reviewer|评分|总分|推荐|置信度|熟悉程度)(?:\b|(?=[\s:：]|$))\s*[*_]{0,2}\s*[:：]/i;
 const SEP_RE = /^\s*[-=_*#]{3,}\s*$/;
 const ITEM_SECTIONS = ['weakness', 'question', 'detail', 'limitation', 'ethics', 'strength'];
 
@@ -166,7 +169,8 @@ function splitItems(body) {
   const flush = () => {
     if (cur) {
       const t = cur.text.replace(/\s+/g, ' ').trim();
-      if (bare(t) >= 25) { cur.text = t; cur.chars = countChars(t); items.push(cur); }
+      // 下限取 12：中文信息密度高，15 字已是一句完整意见；英文短句如 "No baseline." 也该保留
+      if (bare(t) >= 12) { cur.text = t; cur.chars = countChars(t); items.push(cur); }
     }
     cur = null;
   };
@@ -203,29 +207,36 @@ function splitItems(body) {
 
 function normSection(s) {
   const k = s.toLowerCase();
-  if (k.startsWith('summary') || k.startsWith('meta')) return 'summary';
+  if (k.startsWith('summary') || k.startsWith('meta') || k.startsWith('总结')) return 'summary';
   if (k.startsWith('strength and weakness')) return 'weakness';
-  if (k.startsWith('strength')) return 'strength';
-  if (k.startsWith('limitation')) return 'limitation';
-  if (k.startsWith('question')) return 'question';
-  if (k.startsWith('weakness')) return 'weakness';
-  if (k.startsWith('ethical')) return 'ethics';
+  if (k.startsWith('strength') || k.startsWith('优点')) return 'strength';
+  if (k.startsWith('limitation') || k.startsWith('局限')) return 'limitation';
+  if (k.startsWith('question') || k.startsWith('问题')) return 'question';
+  if (k.startsWith('weakness') || k.startsWith('缺点')) return 'weakness';
+  if (k.startsWith('ethical') || k.startsWith('伦理')) return 'ethics';
   return 'detail';
 }
 
 /* ------------------------------------------------------------ 分类规则 */
 
+/**
+ * 顺序即优先级：第一个命中的类别胜出。
+ * citation 必须排在 novelty 之前——「缺少相关工作的讨论」是引用问题，
+ * 不是 novelty 质疑，路由到错误打法会浪费整条回复。
+ * 中英文都覆盖：中文审稿意见（及翻译稿）在中文社区并不少见。
+ */
 const CATS = [
-  ['novelty', /novel|contribution|incremental|similar to|prior work|related work|already (been )?(known|proposed)|first[- ]?to|别人也有|新意|创新/i],
-  ['baseline', /baseline|compar|state[- ]of[- ]the[- ]art|sota|stronger method|missing (the )?comparison|对照|基线/i],
-  ['experiment', /experiment|ablation|benchmark|dataset|evaluation|metric|results?( in)? table|figure|seed|variance|statistical|significance|error bar|跑实验|补实验/i],
-  ['theory', /proof|theorem|convergen|assumption|theoretical|bound|lemma|derivation|convergence analysis|理论|证明/i],
-  ['scalability', /scalab|complexity|computational cost|runtime|memory|overhead|efficiency|parallel|扩展性|复杂度/i],
-  ['reproducibility', /reproduc|code|implementation|hyper-?parameter|open[- ]source|appendix detail|seed count|复现|代码/i],
-  ['clarity', /unclear|confus|not clear|hard to follow|notation|defin(?:e|ition)|typo|grammar|writing|structure|readability|clarity|不清楚|表述|写作/i],
-  ['limitation', /limitation|generaliz|future work|scope|applicab|robust|assumes? that|边界|局限/i],
-  ['soundness', /overclaim|unsupported|not (well[- ])?justif|claim that|conclusion is|invalid|flaw|unsound|不成立|夸大/i],
-  ['ethics', /ethic|societal|bias|privacy|safety|dual[- ]use|伦理/i],
+  ['citation', /\b(related work|cite|citation|citing)\b[^.\n]{0,70}\b(missing|missed|lack|absent|should|need|include|discuss)\b|\b(missing|lack(?:ing)?|absent)\b[^.\n]{0,40}\b(related work|citations?|references?)\b|相关工作|参考文献|应(该)?(引用|讨论)|缺少.{0,8}(引用|文献)/i],
+  ['novelty', /novel|contribution|incremental|similar to|prior work|already (been )?(known|proposed)|first[- ]?to|a ?\+ ?b|combination of|combine|别人也有|新意|创新|增量/i],
+  ['baseline', /baseline|compar|state[- ]of[- ]the[- ]art|sota|stronger method|missing (the )?comparison|对照|基线|对比方法/i],
+  ['experiment', /experiment|ablation|benchmark|dataset|evaluation|metric|results?( in)? table|figure|seed|variance|statistical|significance|error bar|实验|消融|数据集|指标|种子|方差|显著性/i],
+  ['theory', /proof|theorem|convergen|assumption|theoretical|bound|lemma|derivation|convergence analysis|理论|证明|定理|收敛/i],
+  ['scalability', /scalab|complexity|computational cost|runtime|memory|overhead|efficiency|parallel|扩展性|复杂度|开销|显存|时延|效率/i],
+  ['reproducibility', /reproduc|code|implementation|hyper-?parameter|open[- ]source|appendix detail|seed count|复现|代码|超参|实现细节/i],
+  ['clarity', /unclear|confus|not clear|hard to follow|notation|defin(?:e|ition)|typo|grammar|writing|structure|readability|clarity|不清楚|表述|写作|符号|拼写|语法|可读性/i],
+  ['limitation', /limitation|generaliz|future work|scope|applicab|robust|assumes? that|边界|局限|泛化|适用范围|鲁棒/i],
+  ['soundness', /overclaim|unsupported|not (well[- ])?justif|claim that|conclusion is|invalid|flaw|unsound|不成立|夸大|结论(不|无法)支持|无效|不公平/i],
+  ['ethics', /ethic|societal|bias|privacy|safety|dual[- ]use|伦理|偏见|隐私/i],
 ];
 
 const BLOCKER = /major|critical|significant|serious|fundamental|fatal|deal[- ]?breaker|cannot recommend|reject|unfair|invalid|unsound|missing essential|严重|致命|硬伤/i;
@@ -247,7 +258,7 @@ const EFFORT_MAP = {
   novelty: 'answer', baseline: 'new_experiment', experiment: 'new_experiment',
   theory: 'answer', scalability: 'evidence', reproducibility: 'evidence',
   clarity: 'revise', limitation: 'answer', soundness: 'evidence',
-  ethics: 'revise', other: 'answer',
+  citation: 'revise', ethics: 'revise', other: 'answer',
 };
 const EFFORT_LABEL = {
   answer: '文字回答（重新定义/划范围）',
@@ -435,15 +446,19 @@ function runCheck(dir) {
     const f = join(dir, 'reviews', `${r.id}.md`);
     if (!existsSync(f)) { rows.push(`${r.id}.md — ❓ 分片文件不存在`); continue; }
     const body = readFileSync(f, 'utf8');
-    let used = 0, filled = 0, total = 0;
+    const parts = [];
+    let filled = 0, total = 0;
     for (const seg of body.split(/\n(?=## )/)) {
-      if (!seg.startsWith('## ')) continue;
+      const h = seg.match(/^## (\w+) —/);
+      if (!h) continue;
       total++;
       const m = seg.match(/\*\*回答\*\*：\n([\s\S]*?)(?=\n---|\n\*\*可复用|$)/);
-      const ans = (m ? m[1] : '').replace(/^<!--\s*ANSWER:[^>]*-->/m, '').trim();
-      if (ans.length) filled++;
-      used += [...ans].length + (ans.length ? 2 : 0); // 条目之间的一次空行
+      const raw = (m ? m[1] : '').replace(/^<!--\s*ANSWER:[^>]*-->/m, '').trim();
+      // 与 assemble / 工作台同一口径：`**标签.** ` + 去掉自带标签的正文
+      const stripped = raw.replace(/^\*\*\w+(?:\.\w+)?\.\*\*\s*/, '').replace(/^\*\*\w+\*\*\s*/, '');
+      if (stripped.length) { filled++; parts.push(`**${h[1]}.** ${stripped}`); }
     }
+    const used = parts.length ? parts.reduce((n, p) => n + [...p].length, 0) + 2 * (parts.length - 1) : 0;
     const state = used > LIMIT ? '❌ 超限' : used > LIMIT * 0.9 ? '⚠️ 接近上限' : '✅';
     if (used > LIMIT) over++; else if (used > LIMIT * 0.9) warn++;
     if (filled < total) empty += total - filled;

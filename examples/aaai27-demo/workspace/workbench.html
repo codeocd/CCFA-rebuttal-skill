@@ -85,6 +85,9 @@
     <option value="close">收尾</option>
     <option value="keep">守住正分</option>
   </select>
+  <label class="hint" style="display:flex;align-items:center;gap:5px;cursor:pointer" title="导出/复制时是否带上用量调试行（提交框里要删掉）">
+    <input type="checkbox" id="hdr"> 含调试头
+  </label>
   <button id="export">导出全部 .txt</button>
   <button class="primary" id="copy">复制当前回复</button>
 </header>
@@ -101,7 +104,8 @@
 <div id="toast"></div>
 
 <script>
-const WS = {"meta":{"source":"examples/aaai27-demo/reviews.txt","generated_at":"2026-11-03T16:49:11.549Z","char_limit_per_review":1500,"negative_threshold":6,"max_confidence":5,"reviewer_count":4,"question_count":15},"reviewers":[{"id":"Bt3Q","score":4,"confidence":5,"soundness":null,"negative":true,"tier":1,"tierNote":"最高优先：高置信度负分。先攻这条，其他审稿人常会跟着调整。","scoreCondition":null,"items":[{"section":"strength","label":"S1","text":"S1. Practical motivation, clear figures, and the pipeline diagram is helpful.","chars":77,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"strength","label":"S2","text":"S2. Code is promised to be released.","chars":36,"category":"reproducibility","categories":["reproducibility"],"severity":"major","misread":false,"effort":"evidence"},{"section":"weakness","label":"W1","text":"I think the data split is potentially leaking: samples from the same production line appear in both train and test. If true this would invalidate the main table, and it is a fundamental problem rather than a presentation issue.","chars":227,"category":"soundness","categories":["soundness"],"severity":"blocker","misread":false,"effort":"evidence"},{"section":"weakness","label":"W2","text":"The improvement on the second benchmark is about 0.6 mAP, which is within the reported noise. Statistical reliability is not established.","chars":137,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"weakness","label":"W3","text":"Notation in Section 3.2 is confusing: z and \\hat{z} are used interchangeably, and Eq. (4) is never referenced again.","chars":116,"category":"clarity","categories":["clarity"],"severity":"minor","misread":false,"effort":"revise"},{"section":"question","label":"Q1","text":"Is the fusion module trained jointly with the diffusion backbone or frozen? This is stated in the appendix but the appendix and main text disagree.","chars":147,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"}],"counts":{"blocker":1,"major":2,"minor":1,"needExperiment":1}},{"id":"xK9p","score":5,"confidence":4,"soundness":null,"negative":true,"tier":1,"tierNote":"最高优先：高置信度负分。先攻这条，其他审稿人常会跟着调整。","scoreCondition":"if the authors provide a comparison against at least one 2026 method","items":[{"section":"strength","label":"S1","text":"S1. The latent-space fusion formulation is elegant and avoids per-modality encoders at inference time.","chars":102,"category":"reproducibility","categories":["reproducibility"],"severity":"major","misread":false,"effort":"evidence"},{"section":"strength","label":"S2","text":"S2. Consistent gains over the three cited fusion baselines on both datasets.","chars":76,"category":"baseline","categories":["baseline","experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"weakness","label":"W1","text":"The novelty relative to cross-attention conditioning (e.g. the 2025 \"AdaCond\" line of work) is not clearly established. The claimed contribution looks like an incremental change of the conditioning interface. This is a major concern for me.","chars":240,"category":"novelty","categories":["novelty","clarity"],"severity":"blocker","misread":false,"effort":"answer"},{"section":"weakness","label":"W2","text":"Only two baselines are from the last 18 months. There is no comparison against a strong recent method, so I cannot judge whether the gain comes from fusion or from the backbone.","chars":177,"category":"baseline","categories":["baseline"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"weakness","label":"W3","text":"No ablation on the number of fused modalities. What happens when one sensor is missing at test time? Robustness to missing modality is the whole point of the application scenario.","chars":179,"category":"experiment","categories":["experiment","limitation"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"question","label":"Q1","text":"Could you report inference latency and peak memory relative to the early-fusion baseline? The method section does not state the overhead.","chars":137,"category":"baseline","categories":["baseline","scalability"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"question","label":"Q2","text":"Which random seeds were used? Are the reported standard deviations over seeds or over test folds?","chars":97,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"limitation","label":"W4","text":"The paper acknowledges only dataset coverage. I would consider raising my score if the authors provide a comparison against at least one 2026 method and a missing-modality ablation.","chars":181,"category":"baseline","categories":["baseline","experiment"],"severity":"major","misread":false,"effort":"new_experiment"}],"counts":{"blocker":1,"major":5,"minor":0,"needExperiment":5}},{"id":"qW2z","score":8,"confidence":4,"soundness":null,"negative":false,"tier":3,"tierNote":"守分：简短致谢 + 答掉小问题，别写长，别引入新争议。","scoreCondition":null,"items":[{"section":"strength","label":"S1","text":"S1. Clean method, strong empirical results, good presentation.","chars":62,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"},{"section":"strength","label":"S2","text":"S2. The missing-modality discussion in the appendix is valuable.","chars":64,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"},{"section":"weakness","label":"W1","text":"A minor point: Table 2 should report the standard deviation of the detector-free baseline too, for symmetry.","chars":108,"category":"baseline","categories":["baseline"],"severity":"minor","misread":false,"effort":"new_experiment"},{"section":"question","label":"Q1","text":"Do you plan to release the anonymized evaluation scripts?","chars":57,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"}],"counts":{"blocker":0,"major":1,"minor":1,"needExperiment":2}},{"id":"mN7d","score":7,"confidence":2,"soundness":null,"negative":false,"tier":3,"tierNote":"守分：简短致谢 + 答掉小问题，别写长，别引入新争议。","scoreCondition":null,"items":[{"section":"strength","label":"S1","text":"S1. The problem formulation is well motivated and the application is meaningful.","chars":80,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"},{"section":"weakness","label":"W1","text":"The theoretical justification in Sec. 3.3 seems to assume the latent distribution is Gaussian, which is generally false for trained VAEs. Minor for me but should be softened in the text.","chars":186,"category":"theory","categories":["theory"],"severity":"minor","misread":false,"effort":"answer"},{"section":"weakness","label":"W2","text":"Related work on multi-modal fusion in medical imaging is missing; the authors should cite and discuss it.","chars":105,"category":"novelty","categories":["novelty"],"severity":"major","misread":false,"effort":"answer"},{"section":"question","label":"Q1","text":"Could you clarify the computational cost as the number of modalities grows?","chars":75,"category":"scalability","categories":["scalability"],"severity":"minor","misread":false,"effort":"evidence"}],"counts":{"blocker":0,"major":1,"minor":2,"needExperiment":0}}],"common_concerns":[{"category":"experiment","raised_by":["Bt3Q","xK9p","qW2z"],"items":["Bt3Q/W2","xK9p/W3","xK9p/Q2","qW2z/Q1"]},{"category":"novelty","raised_by":["xK9p","mN7d"],"items":["xK9p/W1","mN7d/W2"]},{"category":"baseline","raised_by":["xK9p","qW2z"],"items":["xK9p/W2","xK9p/Q1","xK9p/W4","qW2z/W1"]}]};
+const WS = {"meta":{"source":"examples/aaai27-demo/reviews.txt","generated_at":"2026-11-04T16:46:48.897Z","char_limit_per_review":1500,"negative_threshold":6,"max_confidence":5,"reviewer_count":4,"question_count":15},"reviewers":[{"id":"Bt3Q","score":4,"confidence":5,"soundness":null,"negative":true,"tier":1,"tierNote":"最高优先：高置信度负分。先攻这条，其他审稿人常会跟着调整。","scoreCondition":null,"items":[{"section":"strength","label":"S1","text":"S1. Practical motivation, clear figures, and the pipeline diagram is helpful.","chars":77,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"strength","label":"S2","text":"S2. Code is promised to be released.","chars":36,"category":"reproducibility","categories":["reproducibility"],"severity":"major","misread":false,"effort":"evidence"},{"section":"weakness","label":"W1","text":"I think the data split is potentially leaking: samples from the same production line appear in both train and test. If true this would invalidate the main table, and it is a fundamental problem rather than a presentation issue.","chars":227,"category":"soundness","categories":["soundness"],"severity":"blocker","misread":false,"effort":"evidence"},{"section":"weakness","label":"W2","text":"The improvement on the second benchmark is about 0.6 mAP, which is within the reported noise. Statistical reliability is not established.","chars":137,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"weakness","label":"W3","text":"Notation in Section 3.2 is confusing: z and \\hat{z} are used interchangeably, and Eq. (4) is never referenced again.","chars":116,"category":"clarity","categories":["clarity"],"severity":"minor","misread":false,"effort":"revise"},{"section":"question","label":"Q1","text":"Is the fusion module trained jointly with the diffusion backbone or frozen? This is stated in the appendix but the appendix and main text disagree.","chars":147,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"}],"counts":{"blocker":1,"major":2,"minor":1,"needExperiment":1}},{"id":"xK9p","score":5,"confidence":4,"soundness":null,"negative":true,"tier":1,"tierNote":"最高优先：高置信度负分。先攻这条，其他审稿人常会跟着调整。","scoreCondition":"if the authors provide a comparison against at least one 2026 method","items":[{"section":"strength","label":"S1","text":"S1. The latent-space fusion formulation is elegant and avoids per-modality encoders at inference time.","chars":102,"category":"reproducibility","categories":["reproducibility"],"severity":"major","misread":false,"effort":"evidence"},{"section":"strength","label":"S2","text":"S2. Consistent gains over the three cited fusion baselines on both datasets.","chars":76,"category":"baseline","categories":["baseline","experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"weakness","label":"W1","text":"The novelty relative to cross-attention conditioning (e.g. the 2025 \"AdaCond\" line of work) is not clearly established. The claimed contribution looks like an incremental change of the conditioning interface. This is a major concern for me.","chars":240,"category":"novelty","categories":["novelty","clarity"],"severity":"blocker","misread":false,"effort":"answer"},{"section":"weakness","label":"W2","text":"Only two baselines are from the last 18 months. There is no comparison against a strong recent method, so I cannot judge whether the gain comes from fusion or from the backbone.","chars":177,"category":"baseline","categories":["baseline"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"weakness","label":"W3","text":"No ablation on the number of fused modalities. What happens when one sensor is missing at test time? Robustness to missing modality is the whole point of the application scenario.","chars":179,"category":"experiment","categories":["experiment","limitation"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"question","label":"Q1","text":"Could you report inference latency and peak memory relative to the early-fusion baseline? The method section does not state the overhead.","chars":137,"category":"baseline","categories":["baseline","scalability"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"question","label":"Q2","text":"Which random seeds were used? Are the reported standard deviations over seeds or over test folds?","chars":97,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"},{"section":"limitation","label":"W4","text":"The paper acknowledges only dataset coverage. I would consider raising my score if the authors provide a comparison against at least one 2026 method and a missing-modality ablation.","chars":181,"category":"baseline","categories":["baseline","experiment"],"severity":"major","misread":false,"effort":"new_experiment"}],"counts":{"blocker":1,"major":5,"minor":0,"needExperiment":5}},{"id":"qW2z","score":8,"confidence":4,"soundness":null,"negative":false,"tier":3,"tierNote":"守分：简短致谢 + 答掉小问题，别写长，别引入新争议。","scoreCondition":null,"items":[{"section":"strength","label":"S1","text":"S1. Clean method, strong empirical results, good presentation.","chars":62,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"},{"section":"strength","label":"S2","text":"S2. The missing-modality discussion in the appendix is valuable.","chars":64,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"},{"section":"weakness","label":"W1","text":"A minor point: Table 2 should report the standard deviation of the detector-free baseline too, for symmetry.","chars":108,"category":"baseline","categories":["baseline"],"severity":"minor","misread":false,"effort":"new_experiment"},{"section":"question","label":"Q1","text":"Do you plan to release the anonymized evaluation scripts?","chars":57,"category":"experiment","categories":["experiment"],"severity":"major","misread":false,"effort":"new_experiment"}],"counts":{"blocker":0,"major":1,"minor":1,"needExperiment":2}},{"id":"mN7d","score":7,"confidence":2,"soundness":null,"negative":false,"tier":3,"tierNote":"守分：简短致谢 + 答掉小问题，别写长，别引入新争议。","scoreCondition":null,"items":[{"section":"strength","label":"S1","text":"S1. The problem formulation is well motivated and the application is meaningful.","chars":80,"category":"other","categories":["other"],"severity":"major","misread":false,"effort":"answer"},{"section":"weakness","label":"W1","text":"The theoretical justification in Sec. 3.3 seems to assume the latent distribution is Gaussian, which is generally false for trained VAEs. Minor for me but should be softened in the text.","chars":186,"category":"theory","categories":["theory"],"severity":"minor","misread":false,"effort":"answer"},{"section":"weakness","label":"W2","text":"Related work on multi-modal fusion in medical imaging is missing; the authors should cite and discuss it.","chars":105,"category":"citation","categories":["citation"],"severity":"major","misread":false,"effort":"revise"},{"section":"question","label":"Q1","text":"Could you clarify the computational cost as the number of modalities grows?","chars":75,"category":"scalability","categories":["scalability"],"severity":"minor","misread":false,"effort":"evidence"}],"counts":{"blocker":0,"major":1,"minor":2,"needExperiment":0}}],"common_concerns":[{"category":"experiment","raised_by":["Bt3Q","xK9p","qW2z"],"items":["Bt3Q/W2","xK9p/W3","xK9p/Q2","qW2z/Q1"]},{"category":"baseline","raised_by":["xK9p","qW2z"],"items":["xK9p/W2","xK9p/Q1","xK9p/W4","qW2z/W1"]}]};
+const SEED = {"Bt3Q::W1":"Short answer: no leakage. Our split is at the line level, not the sample level (Sec. 3.1, Line 412): every test line appears in zero training sequences. We agree the original wording made this easy to miss, and we will state the protocol explicitly in the caption of Table 2 and release the split audit script with the camera-ready.","Bt3Q::W2":"Under 5 seeds we obtain 84.1 +/- 0.4 vs. 83.5 +/- 0.5 for the strongest baseline; paired t-test over 1,024 samples gives p = 0.021. We will report std over seeds for all rows of Table 2, including the detector-free baseline.","Bt3Q::W3":"We agree. Concretely we will: (1) unify z / z-hat throughout; (2) reference Eq. (4) in the paragraph after Line 318 where it is currently used but not cited; (3) enlarge Fig. 2 captions to 9pt. Page count is unchanged.","Bt3Q::Q1":"The fusion module is trained jointly with the backbone (Alg. 1, Sec. 3.2). The appendix describes a frozen variant retained from our ablation study; we will remove that inconsistency and keep only the configuration used for the main results.","xK9p::W1":"We respectfully clarify that our contribution is not the conditioning interface itself, but that moving fusion into the latent space removes the per-modality encoders at inference, which is what makes the sensor-drop setting tractable. This is measurable, not rhetorical: [-x%] parameters, [-y ms] latency, and the robustness curve in C3. We will sharpen this positioning at the start of Sec. 3 and add the comparison to AdaCond-style work to Related Work.","xK9p::W2":"See Common Response C1. Under matched backbone, resolution and parameter budget we obtain [a] vs. [b] (+[d]) over [AdaFuse-26].","xK9p::W3":"See Common Response C3. We ran the missing-modality ablation you asked for: [x] / [y] / [z] mAP at 0 / 1 / 2 missing sensors.","xK9p::Q1":"See Common Response C1. We did not compare with [x] (no public code) or [y] (requires [unavailable labels]); we will state this in Sec. 4.1.","xK9p::Q2":"O(1) extra ops at inference; [a] ms / [b] GB vs. early fusion [c] ms / [d] GB on 1x GPU, batch [n]. We will add this row to Table 2. Seeds: [5], mean +/- std, see C2.","xK9p::W4":"We have provided both items you named: a comparison against a 2026 method (C1) and the missing-modality ablation (C3). If these address your concern we would be grateful for an updated assessment; if a specific number would help further, we will add it immediately.","qW2z::W1":"We will add mean +/- std over [5] seeds for the detector-free baseline too (see Common Response C2).","qW2z::Q1":"Yes: evaluation scripts, the split audit, and the [5]-seed configs will be released with the camera-ready. We cannot include a repository link during the review period.","mN7d::W1":"You are right that a trained VAE latent is not exactly Gaussian. We will soften the statement to \"approximately Gaussian under the regularization used (Sec. 3.1)\" and note the empirical check in Fig. [k].","mN7d::W2":"We will cite and discuss [refs] in Related Work; they share our sensor-drop motivation but differ in [axis], which we will make explicit.","mN7d::Q1":"See response to Reviewer xK9p Q2 above: O(1) extra inference ops; [a] ms / [b] GB on [hardware]."};
 
 const SNIPPETS = {
   concl:    "Short answer: [yes/no/X] — [one-sentence reason]. Evidence below.",
@@ -117,10 +121,61 @@ const SNIPPETS = {
 
 const chars = (s) => [...String(s || '')].length;
 const key = (r, l) => `${r}::${l}`;
-const STORE = 'ccfa-rebuttal::' + (WS ? (WS.meta.source || '') + ':' + WS.meta.question_count : 'demo');
+
+// 压缩助手：按 pitfalls.md 的禁用/冗余清单匹配「具体片段」，一键移除并重算。
+// 只定位、不自动改写——删不删由作者点。
+const CUTS = [
+  ['奉承或空收尾', /\b(?:insightful|valuable|excellent comment|we hope this clarifies|as clearly stated|obviously)\b/gi],
+  ['道歉式让步', /\bwe apologize\b[^.\n]{0,80}?\bbut\b/gi],
+  ['空承诺（不可核查）', /\bwe will (?:revise|restructure|improve|clarify) (?:the |our )?(?:paper|writing|section|sec\.? ?\d+)\b/gi],
+  ['冗余副词', /\b(?:very|significantly|clearly|thoroughly|quite|really)\s+\w+/gi],
+  ['借口式表述', /\bdue to (?:the )?(?:page|space|length) limit\b/gi],
+];
+
+function buildCuts(r) {
+  const out = [];
+  for (const it of items(r)) {
+    const v = drafts[key(r.id, it.label)] || '';
+    if (!v) continue;
+    for (const [name, re] of CUTS) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(v)) !== null) {
+        if (!m[0].trim()) { re.lastIndex++; continue; }
+        out.push({ k: key(r.id, it.label), label: it.label, name, exact: m[0] });
+        if (out.length > 40) return out;
+      }
+    }
+  }
+  return out;
+}
+
+function cutsHtml(r) {
+  const cuts = buildCuts(r);
+  if (!cuts.length) return '';
+  const saved = cuts.reduce((n, c) => n + chars(c.exact), 0);
+  return `<div class="card"><h3>压缩候选（${cuts.length} 处，共 ${saved} 字符）</h3>
+    <div class="hint" style="margin-bottom:8px">按 pitfalls.md 的禁用/冗余清单定位到具体片段。点「删」只移除这一处并重算字数，其余文字不动。</div>
+    ${cuts.map((c, i) => `<div style="display:flex;gap:8px;align-items:center;margin:5px 0;font-size:12.5px">
+        <span class="tag">${esc(c.label)}</span><span class="tag">${esc(c.name)}</span>
+        <code style="background:#fafbfc;padding:2px 6px;border-radius:4px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.exact)}</code>
+        <button data-cut="${i}" data-k="${esc(c.k)}" data-exact="${esc(c.exact)}">删 −${chars(c.exact)}</button>
+      </div>`).join('')}
+  </div>`;
+}
+function wsHash(o) {
+  const s = JSON.stringify((o.reviewers || []).map((r) => [r.id, (r.items || []).map((i) => i.label)])) + '|' + o.meta.char_limit_per_review;
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+const STORE = WS ? 'ccfa-rebuttal::' + wsHash(WS) : 'ccfa-rebuttal::demo';
 
 let drafts = {};
-try { drafts = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { drafts = {}; }
+try {
+  const saved = localStorage.getItem(STORE);
+  drafts = saved ? JSON.parse(saved) : (SEED || {});   // 无本地草稿时用分片初稿
+} catch (e) { drafts = SEED || {}; }
 let active = 0;
 
 function save() {
@@ -153,10 +208,13 @@ function renderNav() {
   el.querySelectorAll('.rev').forEach(n => n.onclick = () => { active = +n.dataset.i; render(); });
 }
 
-// 一位审稿人的「已用字符」= 所有非空回答 + 条目之间的空行开销
+// 统一计数口径（与 --check / assemble 完全一致）：
+// 计入文本 = 每条 `**标签.** ` + 正文，条目之间用 \n\n 连接。
+function itemText(label, body) { return body && body.trim() ? `**${label}.** ${body}` : ''; }
 function answerFor(r) {
-  return items(r).map(i => drafts[key(r.id, i.label)] || '').filter(s => s.trim()).join('\n\n');
+  return items(r).map(i => itemText(i.label, drafts[key(r.id, i.label)])).filter(Boolean).join('\n\n');
 }
+const itemChars = (label, v) => { const t = itemText(label, v); return t ? chars(t) : 0; };
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -196,13 +254,15 @@ function renderMain() {
         ${it.effort === 'new_experiment' ? '<span class="tag exp">需补实验</span>' : ''}
         ${it.misread ? '<span class="tag">疑似误解 → 归因于写作</span>' : ''}
         <span class="grow"></span>
-        <span class="n ${cls(chars(v), Math.floor(limit / Math.max(1, items(r).length)) )}" data-n="${k}">${chars(v)}</span>
+        <span class="n ${cls(itemChars(it.label, v), Math.floor(limit / Math.max(1, items(r).length)) )}" data-n="${k}">${itemChars(it.label, v)}</span>
         <span class="hint">字符</span>
       </div>
       <details><summary>审稿人原文（${it.chars} 字符 · 引用时只取 ≤12 词，别整段复述）</summary><p>${esc(it.text)}</p></details>
       <textarea data-k="${k}" placeholder="结论 → 依据（Sec./Table/Line）→ 具体动作">${esc(v)}</textarea>
     </div>`;
   }
+
+  html += '<div id="cutsbox">' + cutsHtml(r) + '</div>';
 
   const st = r.items.filter(i => i.section === 'strength');
   if (st.length) html += `<div class="card"><h3>他认可的点（开头呼应可用）</h3>
@@ -226,15 +286,37 @@ function renderMain() {
 
   el.querySelectorAll('textarea').forEach(t => {
     t.oninput = () => {
-      drafts[t.dataset.k] = t.value; save(); refreshCounts();
+      drafts[t.dataset.k] = t.value; save(); refreshCounts(); updateCuts();
       if (t.selectionStart === t.value.length) autoGrow(t);
     };
     autoGrow(t);
   });
+  el.querySelectorAll('[data-cut]').forEach(bindCut);
   refreshCounts();
 }
 
 function autoGrow(t) { t.style.height = 'auto'; t.style.height = Math.min(560, t.scrollHeight + 2) + 'px'; }
+
+function bindCut(b) {
+  b.onclick = () => {
+    const k = b.dataset.k, exact = b.dataset.exact;
+    const v = drafts[k] || '';
+    const i = v.indexOf(exact);
+    if (i < 0) { toast('该片段已不存在，列表已刷新'); updateCuts(); return; }
+    drafts[k] = v.slice(0, i) + v.slice(i + exact.length);
+    save(); updateCuts(); refreshCounts();
+    const t = document.querySelector(`textarea[data-k="${CSS.escape(k)}"]`);
+    if (t) { t.value = drafts[k]; autoGrow(t); }
+    toast(`已删除「${exact.slice(0, 24)}…」，省 ${chars(exact)} 字符`);
+  };
+}
+// 只重画压缩面板，不动输入框焦点
+function updateCuts() {
+  const box = document.getElementById('cutsbox');
+  if (!box) return;
+  box.innerHTML = cutsHtml(WS.reviewers[active]);
+  box.querySelectorAll('[data-cut]').forEach(bindCut);
+}
 
 function refreshCounts() {
   const r = WS.reviewers[active], limit = WS.meta.char_limit_per_review;
@@ -246,24 +328,29 @@ function refreshCounts() {
   left.textContent = used > limit ? `超出 ${used - limit} 字符，无法提交` : `剩余 ${limit - used} 字符`;
   left.className = 'n ' + c;
   document.querySelectorAll('[data-n]').forEach(n => {
-    const v = chars(drafts[n.dataset.n] || '');
+    const [rid, lbl] = n.dataset.n.split('::');
+    const v = itemChars(lbl, drafts[n.dataset.n] || '');
     n.textContent = v; n.className = 'n ' + (v > limit * 0.4 ? 'warn' : 'ok');
   });
   renderNav();
 }
 
-function fullText(r) {
+// 导出/复制的文本与计数口径完全一致：`**标签.** ` + 正文，\n\n 连接。
+// 默认不带调试头（可直接粘进提交框）；勾选「含调试头」才加用量行。
+function fullText(r, withHeader) {
   const limit = WS.meta.char_limit_per_review;
   const body = items(r).map(i => {
     const v = (drafts[key(r.id, i.label)] || '').trim();
-    return `${i.label} (${i.category}/${i.severity}): ${v || '[待填]'}`;
+    return v ? `**${i.label}.** ${v}` : `**${i.label}.** [待填]`;
   }).join('\n\n');
   const used = chars(answerFor(r));
-  return `===== Response to Reviewer ${r.id} — ${used}/${limit} chars =====\n\n${body}\n`;
+  return (withHeader ? `===== Reviewer ${r.id} — ${used}/${limit} chars =====\n\n` : '') + body + '\n';
 }
 
+const headerOn = () => document.getElementById('hdr').checked;
+
 function exportAll() {
-  const txt = WS.reviewers.map(fullText).join('\n\n');
+  const txt = WS.reviewers.map((r) => fullText(r, headerOn())).join('\n\n');
   const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -277,7 +364,7 @@ function render() { renderNav(); renderMain(); window.scrollTo(0, 0); }
 document.getElementById('export').onclick = exportAll;
 document.getElementById('copy').onclick = async () => {
   const r = WS.reviewers[active];
-  try { await navigator.clipboard.writeText(fullText(r)); toast('已复制 ' + r.id + ' 的回复'); }
+  try { await navigator.clipboard.writeText(fullText(r, headerOn())); toast('已复制 ' + r.id + ' 的回复（可直接粘贴）'); }
   catch (e) { toast('浏览器拒绝剪贴板，请用「导出全部」'); }
 };
 document.getElementById('snip').onchange = (e) => {

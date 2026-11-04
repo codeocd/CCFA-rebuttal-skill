@@ -24,6 +24,7 @@ OpenReview 平台，**一次性 author response + 多轮讨论期**。可以补�
 | 打分 | 分数 + 置信度；**刻度与字段名每年可能调整** | ❓ 直接看当年 review form |
 | Confidential Comment | 有仅 AC/SAC 可见的私密评论通道 | 🟡 |
 | AI 辅助审稿 | 近年引入 AI 生成的审稿辅助内容；是否有回复按钮与是否需回应，逐年不同 | ❓ |
+| 负分阈值（供 `--threshold`） | **6**（1–10 刻度，6 = marginally above threshold；低于 6 即负） | 🟡 |
 
 ## 核心策略（与纯文本类会议最大的差别）
 

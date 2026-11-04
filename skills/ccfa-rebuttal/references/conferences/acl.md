@@ -22,6 +22,7 @@ ACL 系已转向 **ARR（ACL Rolling Review）双月周期 + OpenReview 多轮�
 | 修改论文 | ARR 允许在后续周期提交修订版（与 AI 系一次性投稿不同） | 🟡 |
 | Ethics | 有独立 ethics review；伦理质疑要单独、认真回答 | ✅ |
 | 打分 | ARR 用 1–5 量级 + 置信度 + Soundness/Contribution 分项；**字段与刻度以当期表单为准** | ❓ |
+| 负分阈值（供 `--threshold`） | ❓ ARR 1–5 刻度时 borderline（**3**）以下即负，以当期表单为准 | ❓ |
 | 审稿人可见性 | 互相可见 | 🟡 |
 
 ## ACL 系专属要点

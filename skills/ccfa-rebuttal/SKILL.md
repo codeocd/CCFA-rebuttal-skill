@@ -29,7 +29,7 @@ description: 为 CCF-A 及同级顶会论文撰写、拆解、压缩和检查 re
 
 参数拿不到时：**先按最严的假设起草**（纯文本、无外链、不能补实验），并告诉用户哪几条假设需要放松。
 
-## 五种任务入口
+## 六种任务入口
 
 不要强迫用户选模式。从材料判断意图，缺信息就问**最多 1–3 个**最必要的问题，然后立刻推进。
 
@@ -42,7 +42,7 @@ description: 为 CCF-A 及同级顶会论文撰写、拆解、压缩和检查 re
 | **E. 压缩/超限** | 「超了 300 字符」 | 按 `pitfalls.md` 的删减顺序执行，删完仍超就报告并给出必须取舍的决策点 |
 | **F. 写给 AC** | 「这个审稿人明显在乱写」 | 读 `strategy.md` §9，用 `phrasebank.md` §13 模板；先确认是否真的够格（三位都低分时不要告状） |
 
-## 标准工作流（六步）
+## 标准工作流（七步）
 
 ### 1. 收下材料并落地
 
@@ -58,6 +58,7 @@ node scripts/parse_reviews.mjs reviews.txt --out rebuttal-workspace --limit <N> 
 ```
 
 AAAI 类纯文本用 `--limit 1500 --threshold 6`；OpenReview 类可把 `--limit` 设大（如 6000）当作软预算。
+**`--threshold` 不要拿默认值猜**：从对应规则卡的「负分阈值」行读；标 ❓ 的会议先看当年 review form 的刻度再填。阈值错 = 攻单顺序错，而且不会有任何报错。
 
 读 `rebuttal-workspace/index.md`，确认：
 
@@ -69,6 +70,14 @@ AAAI 类纯文本用 `--limit 1500 --threshold 6`；OpenReview 类可把 `--limi
 脚本的分类是**启发式提示，不是判决**。severity/effort 判断错了要手工改。
 
 ### 3. 证据盘点（决定能写什么）
+
+**先建证据索引，再谈回答。** 拿到论文（或其 PDF/摘要/相关章节）后，先产出一份 `evidence.md`：
+把每条待答问题映射到论文里的真实位置——`Sec. x / Line y / Table n / Fig. k / Eq. (m)`，
+以及「论文里已有的数字」。这份索引是起草阶段唯一允许引用的位置来源。
+
+- 论文拿不到时，**所有位置一律写 `[位置待核]`**，并在交付时列进「待你确认」清单。
+  编一个看起来合理的 Line 412，和编一个实验数字，是同一种错误。
+- 索引里找不到的问题，才进入下面的 `待补` / `来不及` 状态。
 
 给每个待答问题标一个证据状态，**按状态决定写法**：
 
@@ -101,14 +110,44 @@ node scripts/parse_reviews.mjs --check rebuttal-workspace
 ```
 
 超限就按 `pitfalls.md` 的删减顺序执行。**合并同类项可以，静默删除被点名的 W/Q 不行。**
+工作台里的「压缩候选」面板会按禁用/冗余清单定位到具体片段，点一下删一处并重算——只定位不代改。
 
-### 6. 终检
+### 6. 组装成稿
+
+```bash
+node scripts/assemble_rebuttal.mjs rebuttal-workspace
+```
+
+产出 `final-rebuttal.md`（带逐位用量表）与 `final-rebuttal.txt`（纯正文，直接粘）。脚本做三件确定性的事：
+
+- 共性问题自动单列成 `C1..Cn`；若簇内已有成员填了答案，用第一条做 seed 并标注来源，**改写成一句话结论是作者的判断，脚本不代写**；
+- 分回复里属于某共性问题且自身未填的条目，自动写 `See Common Response Cn.`（不是只写「见其他回复」，会带编号）；
+- 逐位统计字符并标超限；未填条目保留 `[待填]` 并在结尾列出。
+
+### 7. 终检
 
 逐条过 `pitfalls.md` 末尾的「提交前 60 秒清单」。另外必须自己核实三件脚本核不了的事：
 
 - 每个数字都能指到论文位置或 rebuttal 内的实测吗？
 - 有没有把「打算做」写成「做了」？
 - 一个没细读论文的 AC 能看懂这段吗？
+
+## 阶段二：讨论期（OpenReview 系会议）
+
+提交 author response 只是第一枪。NeurIPS / ICLR / ICML / ACL(ARR) 有讨论期，胜负往往在这里定。
+纯文本类会议（AAAI/IJCAI）与 1 页 PDF 类（CVPR 系）**没有**这一阶段，跳过本节。
+
+1. **维护一份 `Summary of Changes`** 并持续更新：改了哪节、加了哪张表、补了哪个数字。
+   AC 写 meta-review 时几乎一定会直接引用它。
+2. **把「不确定」变成「已解决」**：对每位审稿人追问一句可被一句话确认的话——
+   `@Reviewer X Could you confirm whether [specific point] resolves your concern?`
+   别写需要他再读三段才能判断的散文。
+3. **沉默 = 坏消息**。审稿人不回复时，一条礼貌的 ping，措辞是「便于 AC 了解进展」，
+   不是「他不回我」。抄送 AC 前确认会议允许。
+4. **新数字到了就立刻贴**，并同步更新 Summary of Changes；不要攒到讨论期最后一天。
+5. **点名要分数条件**：`Which of the remaining points would change your score?`
+   把有限笔墨集中到真正影响打分的那一条。
+6. 讨论期里**不要开新战场**：只回答被追问的，不主动引入未被问到的实验或主张。
 
 ## 时态一致性（防幻觉的核心机制）
 
@@ -139,7 +178,10 @@ node scripts/build_workbench.mjs rebuttal-workspace   # 生成 rebuttal-workbenc
 ```
 
 浏览器打开即可：左侧按攻单顺序列审稿人与问题，中间逐条撰写，**实时显示字符数/剩余预算**，
-超限变红，自动存本地草稿，一键导出可直接粘贴进提交框的纯文本。
+超限变红，自动存本地草稿。分片里已填的内容会作为初稿载入（不覆盖你浏览器里的本地草稿）。
+「压缩候选」面板按禁用/冗余清单定位具体片段，一键删除并重算。
+导出/复制默认**不带调试头**，可直接粘进提交框；勾选「含调试头」才加用量行。
+计数口径与 `--check`、`assemble` 完全一致：`**标签.** ` + 正文，条目间 `\n\n`。
 
 ## Resources
 
@@ -153,5 +195,6 @@ node scripts/build_workbench.mjs rebuttal-workspace   # 生成 rebuttal-workbenc
 | `references/phrasebank.md` | 需要句子时：开场、结论先行、不同意、承认、承诺具体化、收尾、Confidential Comment |
 | `references/pitfalls.md` | 终检时：反模式清单、格式坑、删减顺序、60 秒清单 |
 | `scripts/parse_reviews.mjs` | 解析 reviews → 优先级/共性问题/字符预算；`--check` 校验超限 |
-| `scripts/build_workbench.mjs` | 把 workspace 注入 HTML 工作台 |
+| `scripts/assemble_rebuttal.mjs` | 分片 → 成稿：共性单列、未填指向 C{n}、逐位字数、md + 可粘贴 txt |
+| `scripts/build_workbench.mjs` | 把 workspace（含分片初稿）注入 HTML 工作台 |
 | `assets/workbench.html` | 工作台模板（由 build 脚本填充） |

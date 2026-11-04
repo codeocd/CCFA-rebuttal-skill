@@ -18,7 +18,7 @@
 
 ---
 
-## W2 — novelty · major · 文字回答（重新定义/划范围）
+## W2 — citation · major · 承认 presentation 并承诺修改
 
 **审稿人原文**（105 字符，引用时只取关键短语，别整段复述）：
 > Related work on multi-modal fusion in medical imaging is missing; the authors should cite and discuss it.

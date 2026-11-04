@@ -1,0 +1,3 @@
+Weaknesses
+1. Missing ablation study on the fusion module.
+2. The claims about scalability are not supported by evidence.

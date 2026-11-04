@@ -19,7 +19,6 @@
 | 类别 | 提出者 | 条目 |
 | --- | --- | --- |
 | experiment | Bt3Q, xK9p, qW2z | Bt3Q/W2, xK9p/W3, xK9p/Q2, qW2z/Q1 |
-| novelty | xK9p, mN7d | xK9p/W1, mN7d/W2 |
 | baseline | xK9p, qW2z | xK9p/W2, xK9p/Q1, xK9p/W4, qW2z/W1 |
 
 ## 提分条件命中清单

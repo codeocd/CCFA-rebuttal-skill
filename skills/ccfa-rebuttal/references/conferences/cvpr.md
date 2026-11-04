@@ -22,6 +22,7 @@
 | 审稿人可见性 | 通常互相不可见（与 OpenReview 系不同） | 🟡 |
 | 给 AC 的密信 | 特殊情况下允许单独的 confidential comment | 🟡 |
 | 打分 | 分数 + 置信度，看当年 form | ❓ |
+| 负分阈值（供 `--threshold`） | ❓ 看当年 form；borderline 分以下即负（1–10 刻度常为 **6**，1–6 刻度常为 **3**） | ❓ |
 
 ## 1 页 PDF 的排版即预算
 

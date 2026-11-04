@@ -4,7 +4,7 @@
 
 **Turn a pile of reviewer comments into a rebuttal that fits the character budget and reads to the AC as "concern resolved".**
 
-[![version](https://img.shields.io/badge/version-v1.0.0-2f5bd0)](skills/ccfa-rebuttal/SKILL.md)
+[![version](https://img.shields.io/badge/version-v1.1.0-2f5bd0)](skills/ccfa-rebuttal/SKILL.md)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)](#-contributing)
 [![deps](https://img.shields.io/badge/dependencies-zero-blue)](skills/ccfa-rebuttal/scripts)
@@ -49,18 +49,19 @@ Reviewers on the left in attack order, drafting in the middle, **live character 
 Any of these (Node.js ≥ 18 required):
 
 ```bash
-# Option A: skills CLI (recommended; works for Claude Code / Codex)
-npx skills add codeocd/CCFA-rebuttal-skill --skill ccfa-rebuttal
-
-# Option B: manual copy for Claude Code
+# Option A: manual copy (most reliable, recommended)
 git clone https://github.com/codeocd/CCFA-rebuttal-skill.git
-cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal ~/.claude/skills/
+cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal ~/.claude/skills/     # Claude Code
+# cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal ~/.agents/skills/   # Codex
+# cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal .qoder/skills/      # Qoder (project scope)
 
-# Option C: Qoder (project scope)
-cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal .qoder/skills/
+# Option B: skills CLI (third-party tool; not verified per-version by this repo — fall back to A)
+npx skills add codeocd/CCFA-rebuttal-skill --skill ccfa-rebuttal
 ```
 
 > ⚠️ **Copy the whole directory**, not just `SKILL.md` — it lazily loads the strategy library, phrase bank and venue cards from `references/`.
+>
+> The `.claude-plugin/` folder at the repo root is a Claude Code plugin-marketplace manifest (**experimental, not verified against the official install flow**). Neither install path above depends on it.
 
 Restart the session (or `/skills reload`), then just talk:
 
@@ -75,7 +76,8 @@ node skills/ccfa-rebuttal/scripts/parse_reviews.mjs reviews.txt \
      --out rebuttal-workspace --limit 1500 --threshold 6
 
 node skills/ccfa-rebuttal/scripts/build_workbench.mjs rebuttal-workspace
-open rebuttal-workspace/workbench.html
+# open the generated HTML: `open` on macOS, `start` on Windows, `xdg-open` on Linux
+start rebuttal-workspace\workbench.html
 ```
 
 Output:
@@ -91,11 +93,18 @@ Before submitting, verify the budget:
 ```bash
 node skills/ccfa-rebuttal/scripts/parse_reviews.mjs --check rebuttal-workspace
 
-Bt3Q.md — 1055/1500 ✅ · 4/4 filled
-xK9p.md — 1339/1500 ✅ · 6/6 filled
+Bt3Q.md — 1053/1500 ✅ · 4/4 filled
+xK9p.md — 1337/1500 ✅ · 6/6 filled
 ```
 
-👉 A complete runnable example lives in **[examples/aaai27-demo/](examples/aaai27-demo/)**: `reviews.txt` (synthetic) → `workspace/` (parsed) → **[final-rebuttal.md](examples/aaai27-demo/final-rebuttal.md)** (finished text plus why the effort was allocated that way).
+Last step: assemble the shards into a submittable draft (shared concerns auto-grouped, unfilled points auto-pointed at `C{n}`, per-reviewer char totals):
+
+```bash
+node skills/ccfa-rebuttal/scripts/assemble_rebuttal.mjs rebuttal-workspace
+# → rebuttal-workspace/final-rebuttal.md (with usage table) + final-rebuttal.txt (plain body, paste-ready)
+```
+
+👉 A complete runnable example lives in **[examples/aaai27-demo/](examples/aaai27-demo/)**: `reviews.txt` (synthetic) → `workspace/` (parsed + machine-assembled draft) → **[polished-rebuttal.md](examples/aaai27-demo/polished-rebuttal.md)** (the human-polished version, plus why the effort was allocated that way).
 
 ---
 
@@ -109,7 +118,8 @@ xK9p.md — 1339/1500 ✅ · 6/6 filled
 | **14 objection playbooks** | novelty, baseline, experiment, theory, scalability, reproducibility, clarity, limitation, soundness, ethics, vague reviews, hostile reviews, infeasible experiments, out-of-scope asks |
 | **English phrase bank** | Openers, conclusion-first, pointing to existing evidence, polite disagreement, owning presentation issues, making promises verifiable, one-line results, asking for specifics, closers, confidential comments to the AC |
 | **Venue rule library** | AAAI, NeurIPS, ICLR, ICML, CVPR/ICCV/ECCV, ACL/EMNLP (ARR), IJCAI — character limits, new-experiment policy, external links, reviewer visibility, score-change base rates |
-| **Character counting** | Counts the way OpenReview does (`apple` = 5; spaces and Markdown syntax are billed too), not a word estimate |
+| **Character counting** | Counts the way OpenReview does (`apple` = 5; spaces and Markdown syntax are billed too), not a word estimate; `--check`, the workbench and the assembler all use the identical rule |
+| **Draft assembly** | Shared concerns auto-grouped into C1..Cn; unfilled members of a group auto-point at `See Common Response Cn.`; outputs a usage-tabled .md plus a paste-ready .txt |
 | **Interactive workbench** | Single HTML file: live counts, over-limit alerts, snippet insertion, local drafts, one-click plain-text export |
 | **Anti-pattern checklist** | 17 score-losing moves, a 7-step order for cutting when you are over budget, and a 60-second pre-submit checklist |
 
@@ -133,6 +143,7 @@ skills/ccfa-rebuttal/
 │       └── _TEMPLATE.md          your venue missing? copy it and paste the CFP text
 ├── scripts/
 │   ├── parse_reviews.mjs         parse + ranking + budget (--check)
+│   ├── assemble_rebuttal.mjs     shards → submittable draft (shared concerns grouped, per-reviewer counts)
 │   └── build_workbench.mjs       inject workspace.json into the HTML workbench
 └── assets/
     └── workbench.html            workbench template

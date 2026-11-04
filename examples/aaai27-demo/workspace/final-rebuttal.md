@@ -1,0 +1,64 @@
+# Final Rebuttal（由 assemble_rebuttal.mjs 组装）
+
+- 来源：`examples/aaai27-demo/reviews.txt`
+- 每条上限：1500 字符（按字符计，Markdown 符号同样计费）
+- 组装时间：2026-11-04T16:59:01.712Z
+
+| Reviewer | 已用字符 | 状态 |
+| --- | --- | --- |
+| Bt3Q | 1053 / 1500 | ✅ |
+| xK9p | 1337 / 1500 | ✅ |
+| qW2z | 286 / 1500 | ✅ |
+| mN7d | 465 / 1500 | ✅ |
+
+## Common Responses
+
+### C1 — experiment（Bt3Q, xK9p, qW2z）
+
+> seed 取自 Bt3Q/W2，请改写为面向全体审稿人的一句话结论 + 证据位置 + 动作：
+
+Under 5 seeds we obtain 84.1 +/- 0.4 vs. 83.5 +/- 0.5 for the strongest baseline; paired t-test over 1,024 samples gives p = 0.021. We will report std over seeds for all rows of Table 2, including the detector-free baseline.
+
+### C2 — baseline（xK9p, qW2z）
+
+> seed 取自 xK9p/W2，请改写为面向全体审稿人的一句话结论 + 证据位置 + 动作：
+
+See Common Response C1. Under matched backbone, resolution and parameter budget we obtain [a] vs. [b] (+[d]) over [AdaFuse-26].
+
+## Response to Reviewer Bt3Q（1053 / 1500 字符）
+
+**W1.** Short answer: no leakage. Our split is at the line level, not the sample level (Sec. 3.1, Line 412): every test line appears in zero training sequences. We agree the original wording made this easy to miss, and we will state the protocol explicitly in the caption of Table 2 and release the split audit script with the camera-ready.
+
+**W2.** Under 5 seeds we obtain 84.1 +/- 0.4 vs. 83.5 +/- 0.5 for the strongest baseline; paired t-test over 1,024 samples gives p = 0.021. We will report std over seeds for all rows of Table 2, including the detector-free baseline.
+
+**W3.** We agree. Concretely we will: (1) unify z / z-hat throughout; (2) reference Eq. (4) in the paragraph after Line 318 where it is currently used but not cited; (3) enlarge Fig. 2 captions to 9pt. Page count is unchanged.
+
+**Q1.** The fusion module is trained jointly with the backbone (Alg. 1, Sec. 3.2). The appendix describes a frozen variant retained from our ablation study; we will remove that inconsistency and keep only the configuration used for the main results.
+
+## Response to Reviewer xK9p（1337 / 1500 字符）
+
+**W1.** We respectfully clarify that our contribution is not the conditioning interface itself, but that moving fusion into the latent space removes the per-modality encoders at inference, which is what makes the sensor-drop setting tractable. This is measurable, not rhetorical: [-x%] parameters, [-y ms] latency, and the robustness curve in C3. We will sharpen this positioning at the start of Sec. 3 and add the comparison to AdaCond-style work to Related Work.
+
+**W2.** See Common Response C1. Under matched backbone, resolution and parameter budget we obtain [a] vs. [b] (+[d]) over [AdaFuse-26].
+
+**W3.** See Common Response C3. We ran the missing-modality ablation you asked for: [x] / [y] / [z] mAP at 0 / 1 / 2 missing sensors.
+
+**Q1.** See Common Response C1. We did not compare with [x] (no public code) or [y] (requires [unavailable labels]); we will state this in Sec. 4.1.
+
+**Q2.** O(1) extra ops at inference; [a] ms / [b] GB vs. early fusion [c] ms / [d] GB on 1x GPU, batch [n]. We will add this row to Table 2. Seeds: [5], mean +/- std, see C2.
+
+**W4.** We have provided both items you named: a comparison against a 2026 method (C1) and the missing-modality ablation (C3). If these address your concern we would be grateful for an updated assessment; if a specific number would help further, we will add it immediately.
+
+## Response to Reviewer qW2z（286 / 1500 字符）
+
+**W1.** We will add mean +/- std over [5] seeds for the detector-free baseline too (see Common Response C2).
+
+**Q1.** Yes: evaluation scripts, the split audit, and the [5]-seed configs will be released with the camera-ready. We cannot include a repository link during the review period.
+
+## Response to Reviewer mN7d（465 / 1500 字符）
+
+**W1.** You are right that a trained VAE latent is not exactly Gaussian. We will soften the statement to "approximately Gaussian under the regularization used (Sec. 3.1)" and note the empirical check in Fig. [k].
+
+**W2.** We will cite and discuss [refs] in Related Work; they share our sensor-drop motivation but differ in [axis], which we will make explicit.
+
+**Q1.** See response to Reviewer xK9p Q2 above: O(1) extra inference ops; [a] ms / [b] GB on [hardware].

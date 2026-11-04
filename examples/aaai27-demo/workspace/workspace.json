@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "examples/aaai27-demo/reviews.txt",
-    "generated_at": "2026-11-03T16:49:11.549Z",
+    "generated_at": "2026-11-04T16:46:48.897Z",
     "char_limit_per_review": 1500,
     "negative_threshold": 6,
     "max_confidence": 5,
@@ -343,13 +343,13 @@
           "label": "W2",
           "text": "Related work on multi-modal fusion in medical imaging is missing; the authors should cite and discuss it.",
           "chars": 105,
-          "category": "novelty",
+          "category": "citation",
           "categories": [
-            "novelty"
+            "citation"
           ],
           "severity": "major",
           "misread": false,
-          "effort": "answer"
+          "effort": "revise"
         },
         {
           "section": "question",
@@ -386,17 +386,6 @@
         "xK9p/W3",
         "xK9p/Q2",
         "qW2z/Q1"
-      ]
-    },
-    {
-      "category": "novelty",
-      "raised_by": [
-        "xK9p",
-        "mN7d"
-      ],
-      "items": [
-        "xK9p/W1",
-        "mN7d/W2"
       ]
     },
     {

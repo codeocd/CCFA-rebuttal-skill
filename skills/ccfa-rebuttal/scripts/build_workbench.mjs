@@ -44,21 +44,43 @@ try {
   process.exit(1);
 }
 
+// 把分片里已填的回答注入为工作台初稿，避免「仓库里分片是填好的、打开工作台却是空的」
+const seed = {};
+const reviewsDir = join(WS, 'reviews');
+if (existsSync(reviewsDir)) {
+  for (const r of data.reviewers || []) {
+    const f = join(reviewsDir, `${r.id}.md`);
+    if (!existsSync(f)) continue;
+    const body = readFileSync(f, 'utf8');
+    for (const seg of body.split(/\n(?=## )/)) {
+      const h = seg.match(/^## (\w+) —/);
+      if (!h) continue;
+      const m = seg.match(/\*\*回答\*\*：\n([\s\S]*?)(?=\n---|\n\*\*可复用|$)/);
+      const ans = (m ? m[1] : '').replace(/^<!--\s*ANSWER:[^>]*-->/m, '').trim()
+        .replace(/^\*\*\w+(?:\.\w+)?\.\*\*\s*/, '').replace(/^\*\*\w+\*\*\s*/, '');
+      if (ans) seed[`${r.id}::${h[1]}`] = ans;
+    }
+  }
+}
+
 const html = readFileSync(tpl, 'utf8');
 const MARKER = '/*__DATA__*/null';
-if (!html.includes(MARKER)) {
-  console.log('错误: 模板里找不到注入点 /*__DATA__*/null。');
+const SEED_MARKER = '/*__SEED__*/null';
+if (!html.includes(MARKER) || !html.includes(SEED_MARKER)) {
+  console.log('错误: 模板里找不到注入点 /*__DATA__*/null 或 /*__SEED__*/null。');
   process.exit(1);
 }
 
 // </script> 出现在 JSON 字符串里会提前闭合标签，必须转义
 const safe = JSON.stringify(data).replace(/<\//g, '<\\/');
+const safeSeed = JSON.stringify(seed).replace(/<\//g, '<\\/');
 const oi = argv.indexOf('-o');
 const out = oi > -1 ? resolve(argv[oi + 1]) : join(WS, 'workbench.html');
 
-writeFileSync(out, html.replace(MARKER, safe), 'utf8');
+writeFileSync(out, html.replace(MARKER, safe).replace(SEED_MARKER, safeSeed), 'utf8');
 
 const kb = (readFileSync(out).length / 1024).toFixed(1);
 console.log(`✅ 工作台已生成：${out.replace(/\\/g, '/')}`);
 console.log(`   ${data.meta.reviewer_count} 位审稿人 · ${data.meta.question_count} 条待答 · 每条上限 ${data.meta.char_limit_per_review} 字符 · ${kb} KB`);
+console.log(`   分片已填初稿：${Object.keys(seed).length} 条（打开即见，未覆盖你浏览器里的本地草稿）`);
 console.log('   直接双击在浏览器打开即可；草稿保存在本地 localStorage，不联网。');

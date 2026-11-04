@@ -1,0 +1,33 @@
+Official Review of Submission 77 - Reviewer aA1
+
+Summary:
+Solid paper on widget detection.
+
+Strengths:
+- S1. Clear motivation and strong results.
+
+Weaknesses:
+- W1. The novelty relative to prior conditioning work is not established; this looks incremental.
+- W2. No comparison against a recent strong baseline.
+
+Questions:
+- Q1. Could you report latency and memory overhead?
+
+Rating: 5
+Confidence: 4
+
+--------------------------------------------------------------------------------
+
+Official Review of Submission 77 - Reviewer bB2
+
+Summary:
+Interesting but I have a serious concern about the split.
+
+Weaknesses:
+- W1. I think the data split is leaking: same entities in train and test. This would invalidate the main table.
+
+Questions:
+- Q1. Which seeds were used?
+
+Rating: 8
+Confidence: 2

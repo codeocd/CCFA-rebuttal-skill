@@ -4,7 +4,7 @@
 
 **把一堆审稿意见，变成一份在字符预算内、让 AC 一眼判定「疑虑已解决」的 rebuttal。**
 
-[![version](https://img.shields.io/badge/version-v1.0.0-2f5bd0)](skills/ccfa-rebuttal/SKILL.md)
+[![version](https://img.shields.io/badge/version-v1.1.0-2f5bd0)](skills/ccfa-rebuttal/SKILL.md)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)](#-贡献)
 [![deps](https://img.shields.io/badge/dependencies-zero-blue)](skills/ccfa-rebuttal/scripts)
@@ -49,18 +49,19 @@
 任选一种（都需要 Node.js ≥ 18）：
 
 ```bash
-# 方式 A：skills CLI（推荐，Claude Code / Codex 通用）
-npx skills add codeocd/CCFA-rebuttal-skill --skill ccfa-rebuttal
-
-# 方式 B：手动复制到 Claude Code
+# 方式 A：手动复制（最稳，推荐）
 git clone https://github.com/codeocd/CCFA-rebuttal-skill.git
-cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal ~/.claude/skills/
+cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal ~/.claude/skills/     # Claude Code
+# cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal ~/.agents/skills/   # Codex
+# cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal .qoder/skills/      # Qoder（项目级）
 
-# 方式 C：Qoder（项目级）
-cp -R CCFA-rebuttal-skill/skills/ccfa-rebuttal .qoder/skills/
+# 方式 B：skills CLI（第三方工具，本仓库未逐版本验证；失败就回方式 A）
+npx skills add codeocd/CCFA-rebuttal-skill --skill ccfa-rebuttal
 ```
 
 > ⚠️ **请复制整个目录**，不要只拿 `SKILL.md`——它会按需加载 `references/` 里的策略库、句式库和会议规则卡。
+>
+> 仓库根目录的 `.claude-plugin/` 是 Claude Code 插件市场清单（**实验性，未经官方安装流程验证**）。上面两条安装路径不依赖它。
 
 装好后重启会话（或 `/skills reload`），然后直接说话就能触发：
 
@@ -75,7 +76,8 @@ node skills/ccfa-rebuttal/scripts/parse_reviews.mjs reviews.txt \
      --out rebuttal-workspace --limit 1500 --threshold 6
 
 node skills/ccfa-rebuttal/scripts/build_workbench.mjs rebuttal-workspace
-open rebuttal-workspace/workbench.html
+# 打开生成的 HTML：macOS 用 open，Windows 用 start，Linux 用 xdg-open
+start rebuttal-workspace\workbench.html
 ```
 
 输出：
@@ -91,13 +93,20 @@ open rebuttal-workspace/workbench.html
 ```bash
 node skills/ccfa-rebuttal/scripts/parse_reviews.mjs --check rebuttal-workspace
 
-Bt3Q.md — 1055/1500 字符 ✅ · 已填 4/4 条
-xK9p.md — 1339/1500 字符 ✅ · 已填 6/6 条
-qW2z.md — 288/1500 字符 ✅ · 已填 2/2 条
-mN7d.md — 467/1500 字符 ✅ · 已填 3/3 条
+Bt3Q.md — 1053/1500 字符 ✅ · 已填 4/4 条
+xK9p.md — 1337/1500 字符 ✅ · 已填 6/6 条
+qW2z.md — 286/1500 字符 ✅ · 已填 2/2 条
+mN7d.md — 465/1500 字符 ✅ · 已填 3/3 条
 ```
 
-👉 完整可跑的例子在 **[examples/aaai27-demo/](examples/aaai27-demo/)**：`reviews.txt`（合成审稿）→ `workspace/`（解析产物）→ **[final-rebuttal.md](examples/aaai27-demo/final-rebuttal.md)**（成品 + 为什么这么分配笔墨）。
+最后一步，把分片组装成可提交的成稿（共性问题自动单列、未填条目自动指向 C{n}、逐位统计字符）：
+
+```bash
+node skills/ccfa-rebuttal/scripts/assemble_rebuttal.mjs rebuttal-workspace
+# → rebuttal-workspace/final-rebuttal.md（带用量表）+ final-rebuttal.txt（纯正文，直接粘）
+```
+
+👉 完整可跑的例子在 **[examples/aaai27-demo/](examples/aaai27-demo/)**：`reviews.txt`（合成审稿）→ `workspace/`（解析 + 机器成稿）→ **[polished-rebuttal.md](examples/aaai27-demo/polished-rebuttal.md)**（人工打磨版 + 为什么这么分配笔墨）。
 
 ---
 
@@ -111,7 +120,8 @@ mN7d.md — 467/1500 字符 ✅ · 已填 3/3 条
 | **14 类异议打法** | novelty / baseline / experiment / theory / scalability / reproducibility / clarity / limitation / soundness / ethics / 含糊质疑 / 敌意评审 / 来不及补实验 / 超范围 |
 | **英文句式库** | 开场、结论先行、指出论文已有内容、礼貌不同意、承认表述问题、承诺具体化、一行新数字、请求具体化、收尾、Confidential Comment |
 | **会议规则库** | AAAI、NeurIPS、ICLR、ICML、CVPR/ICCV/ECCV、ACL/EMNLP(ARR) + IJCAI，含字符上限、能否补实验、能否外链、审稿人可见性、改分基线率 |
-| **字符预算校验** | 按 OpenReview 真实规则计数（`apple` = 5，空格与 Markdown 符号同样计费），不是估算词数 |
+| **字符预算校验** | 按 OpenReview 真实规则计数（`apple` = 5，空格与 Markdown 符号同样计费），不是估算词数；`--check`、工作台、成稿三处口径完全一致 |
+| **成稿组装** | 共性问题自动单列成 C1..Cn，未填的共性问题成员自动写 `See Common Response Cn.`，产出带用量表的 md 与可直接粘贴的 txt |
 | **交互式工作台** | 单文件 HTML，实时字数、超限告警、句式插入、本地草稿、一键导出纯文本 |
 | **反模式清单** | 17 条会直接掉分的动作 + 超字时的 7 步删减顺序 + 提交前 60 秒清单 |
 
@@ -135,6 +145,7 @@ skills/ccfa-rebuttal/
 │       └── _TEMPLATE.md          没有你的会议？复制它，贴进当年 CFP 原文
 ├── scripts/
 │   ├── parse_reviews.mjs         解析 + 优先级 + 字符预算（--check 校验超限）
+│   ├── assemble_rebuttal.mjs     分片 → 成稿（共性单列 / 未填指向 C{n} / 逐位字数）
 │   └── build_workbench.mjs       把 workspace 注入 HTML 工作台
 └── assets/
     └── workbench.html            交互式工作台模板

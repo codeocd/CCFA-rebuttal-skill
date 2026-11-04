@@ -1,10 +1,14 @@
-# 示例成品：AAAI-27 一条完整 rebuttal
+# 示例成品：AAAI-27 一条完整 rebuttal（人工打磨版）
 
 > ⚠️ **本示例的论文、审稿意见与全部数字均为合成数据**，仅用于演示输出形态。
 > 真实使用时：`[...]` 占位符必须换成你自己的数据；跑不出来的数字**保留占位符**，不要填假值。
 >
-> 输入：[`reviews.txt`](reviews.txt)（4 位审稿人）→ 解析产物：[`workspace/`](workspace/) → 本文件。
-> 字符数由 `parse_reviews.mjs --check` 实测，见文末。
+> 流水线三层产物，从机器到人工：
+> 1. [`reviews.txt`](reviews.txt) — 合成审稿输入
+> 2. [`workspace/`](workspace/) — `parse_reviews.mjs` 的解析产物（分片 + 工作台）
+> 3. [`workspace/final-rebuttal.md`](workspace/final-rebuttal.md) — `assemble_rebuttal.mjs` 组装的机器成稿
+> 4. **本文件** — 在机器成稿基础上人工打磨后的版本：把 C1/C2 的 seed 改写成面向全体审稿人的一句话结论，
+>    删掉机器留下的指针冗余，调整语气。字符数由 `--check` 实测，见文末。
 
 ---
 
@@ -12,16 +16,16 @@
 
 | 顺序 | 审稿人 | 分数 | 置信度 | 判断 | 实际用量 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Bt3Q | 4 | 5 | 高置信度负分，且提出**数据泄漏**这一 blocker | 1055 / 1500 |
-| 2 | xK9p | 5 | 4 | borderline，且**明确写了提分条件** → 逐字命中 | 1339 / 1500 |
-| 3 | mN7d | 7 | 2 | 正分但置信度低，通篇没有硬伤 | 467 / 1500 |
-| 4 | qW2z | 8 | 4 | 正分，只有一个 minor → 守分，别写长 | 288 / 1500 |
+| 1 | Bt3Q | 4 | 5 | 高置信度负分，且提出**数据泄漏**这一 blocker | 1053 / 1500 |
+| 2 | xK9p | 5 | 4 | borderline，且**明确写了提分条件** → 逐字命中 | 1337 / 1500 |
+| 3 | mN7d | 7 | 2 | 正分但置信度低，通篇没有硬伤 | 465 / 1500 |
+| 4 | qW2z | 8 | 4 | 正分，只有一个 minor → 守分，别写长 | 286 / 1500 |
 
 三个关键决策：
 
 1. **共性问题单列**：`baseline` 被 xK9p + qW2z 提、`experiment` 被三位提。合成一份 Common Responses，各分回复只留指针（`See Common Response C1`），省下约 600 字符。
 2. **Bt3Q 的泄漏指控必须先核实**。这里假设核实结论是「划分在产线级别，不泄漏」→ 属于「当众纠正审稿人事实错误」，语气平和但结论明确，并给出可核查位置。
-3. **xK9p 的提分条件是「补一个 2026 方法 + 缺失模态消融」**。这两件事不做，其余写得再好也不会提分。所以预算优先给这两条，用量最大（1339 字符）是刻意的。
+3. **xK9p 的提分条件是「补一个 2026 方法 + 缺失模态消融」**。这两件事不做，其余写得再好也不会提分。所以预算优先给这两条，用量最大（1337 字符）是刻意的。
 
 ---
 
@@ -38,7 +42,7 @@ mAP with 0/1/2 sensors missing at test time: [x] / [y] / [z]. Degradation is sub
 
 ---
 
-## Response to Reviewer Bt3Q（1055 / 1500 字符）
+## Response to Reviewer Bt3Q（1053 / 1500 字符）
 
 We thank you for recognizing the practical motivation and the clarity of the pipeline figure.
 
@@ -52,7 +56,7 @@ We thank you for recognizing the practical motivation and the clarity of the pip
 
 ---
 
-## Response to Reviewer xK9p（1339 / 1500 字符）
+## Response to Reviewer xK9p（1337 / 1500 字符）
 
 We thank you for the positive reading of the latent-space formulation and the consistent gains.
 
@@ -68,7 +72,7 @@ We thank you for the positive reading of the latent-space formulation and the co
 
 ---
 
-## Response to Reviewer mN7d（467 / 1500 字符）
+## Response to Reviewer mN7d（465 / 1500 字符）
 
 Thank you for the encouraging assessment.
 
@@ -80,7 +84,7 @@ Thank you for the encouraging assessment.
 
 ---
 
-## Response to Reviewer qW2z（288 / 1500 字符）
+## Response to Reviewer qW2z（286 / 1500 字符）
 
 Thank you for the positive assessment and for catching the asymmetry in Table 2.
 
@@ -97,10 +101,10 @@ $ node skills/ccfa-rebuttal/scripts/parse_reviews.mjs --check examples/aaai27-de
 
 字符预算校验（每条上限 1500，按字符计）
 
-Bt3Q.md — 1055/1500 字符 ✅ · 已填 4/4 条
-xK9p.md — 1339/1500 字符 ✅ · 已填 6/6 条
-qW2z.md — 288/1500 字符 ✅ · 已填 2/2 条
-mN7d.md — 467/1500 字符 ✅ · 已填 3/3 条
+Bt3Q.md — 1053/1500 字符 ✅ · 已填 4/4 条
+xK9p.md — 1337/1500 字符 ✅ · 已填 6/6 条
+qW2z.md — 286/1500 字符 ✅ · 已填 2/2 条
+mN7d.md — 465/1500 字符 ✅ · 已填 3/3 条
 
 结果：全部在预算内且已填写，可以提交。
 ```
@@ -114,4 +118,4 @@ mN7d.md — 467/1500 字符 ✅ · 已填 3/3 条
 2. **指向可核查位置**：Sec. 3.1 / Line 412 / Table 2 / Alg. 1 —— 而不是「论文里说了」。
 3. **承诺具体化**：改哪个符号、加哪一行、图例几 pt、页数不变。没有「我们会重写第三章」。
 4. **逐字命中提分条件**，并把「你要求的两件事都做了」明确点出来，请求更新评估。
-5. **正分审稿人写得最短**（241 / 338 字符），不引入新争议。
+5. **正分审稿人写得最短**（286 / 465 字符），不引入新争议。
