@@ -23,7 +23,7 @@ When reviews land, the hard part is usually not English. It is four concrete dec
 
 | Pain point | What people do | What this skill does |
 | --- | --- | --- |
-| 4 reviewers, 15 points, 1,500 characters each | Spread effort evenly, run out of budget on reviewer #2 | A script ranks the **attack order** (high-confidence negative → borderline → hold-the-positive) and tracks remaining characters live |
+| Multiple reviewers, dozens of points, and a character cap on each reply | Spread effort evenly, run out of budget on reviewer #2 | A script ranks the **attack order** (high-confidence negative → borderline → hold-the-positive) and tracks remaining characters live |
 | "Novelty is limited" — now what | Explain for three paragraphs, still no conclusion | A playbook of 14 objection types, each with *signal → triage → tactic → an English exemplar you can edit* |
 | Am I even allowed to add experiments? | Guess, or ask a WeChat group | A **searchable venue rule library** where every line is tagged ✅ official / 🟡 community experience / ❓ verify against this year's CFP |
 | The LLM "helpfully" invented an ablation | — | Three hard rules + a tense-consistency table: anything not actually run must stay as `[evidence needed]` |
